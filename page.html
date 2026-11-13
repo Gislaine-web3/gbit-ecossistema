@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GBIT — CLI Ecosystem</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg: #07091a;
+      --bg-soft: #0c1130;
+      --panel: #11162f;
+      --panel-line: rgba(255,255,255,.07);
+      --text: #eef1ff;
+      --text-dim: #9aa3d1;
+      --purple: #8b6cff;
+      --blue: #08c0ff;
+      --green: #3ddc84;
+      --orange: #ffb347;
+      --violet: #b98bff;
+      --pink: #ff61ef;
+      --red: #ff4757;
+      --cyan: #00f2fe;
+    }
+
+    *{ margin:0; padding:0; box-sizing:border-box; }
+
+    html{ scroll-behavior:smooth; }
+
+    body{
+      background:
+        radial-gradient(1200px 600px at 15% -10%, rgba(139,108,255,.16), transparent 60%),
+        radial-gradient(1000px 500px at 85% 0%, rgba(8,192,255,.12), transparent 55%),
+        var(--bg);
+      color:var(--text);
+      font-family:'Poppins', sans-serif;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    code, .mono{ font-family:'JetBrains Mono', monospace; }
+
+    a{ color:inherit; text-decoration:none; }
+
+    /* ---------- NAV ---------- */
+    nav{
+      position:sticky; top:0; z-index:50;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:20px clamp(20px,5vw,64px);
+      background:rgba(7,9,26,.7);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      border-bottom:1px solid var(--panel-line);
+    }
+    .nav-brand{ display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.5px; }
+    .nav-brand img{ width:30px; height:30px; object-fit: contain; }
+    nav .links{ display:flex; gap:28px; font-size:14px; color:var(--text-dim); }
+    nav .links a:hover{ color:var(--text); transition: color 0.2s; }
+    @media (max-width:640px){ nav .links{ display:flex; gap:15px; } }
+
+    /* ---------- HERO ---------- */
+    header{
+      padding: clamp(40px,8vw,80px) 20px 60px;
+      text-align:center;
+      position:relative;
+    }
+
+    /* Logo ampliada para dar mais destaque visual */
+    .logo-mark{
+      width:260px;
+      max-width:95%;
+      height:auto;
+      display:block;
+      margin:0 auto 28px;
+      filter: drop-shadow(0 0 55px rgba(139,108,255,.5));
+      transition: transform 0.3s ease;
+    }
+    .logo-mark:hover{
+      transform: scale(1.03);
+    }
+
+    .eyebrow{
+      display:inline-flex; align-items:center; gap:8px;
+      font-family:'JetBrains Mono', monospace;
+      font-size:12.5px; letter-spacing:2px; text-transform:uppercase;
+      color:var(--blue);
+      background:rgba(8,192,255,.08);
+      border:1px solid rgba(8,192,255,.25);
+      padding:7px 16px; border-radius:100px;
+      margin-bottom:26px;
+    }
+    .eyebrow .dot{ width:6px; height:6px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); }
+
+    header h1{
+      font-size: clamp(34px, 6vw, 64px);
+      font-weight:800;
+      line-height:1.1;
+      letter-spacing:-1.5px;
+      background:linear-gradient(100deg,#c9bfff 0%, #8b6cff 30%, #08c0ff 70%, #3ddc84 100%);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+      margin-bottom: 16px;
+    }
+
+    header p.tagline{
+      font-size: clamp(16px,2.2vw,20px);
+      color:#dfe3ff;
+      font-weight:500;
+      margin-bottom: 16px;
+    }
+
+    header p.sub{
+      max-width:650px;
+      margin:0 auto;
+      font-size: clamp(14px,1.6vw,16px);
+      color:var(--text-dim);
+      line-height:1.6;
+    }
+    header p.sub b{ color:var(--text); font-weight:600; }
+
+    /* ---------- TERMINAL ---------- */
+    .terminal{
+      max-width:680px;
+      margin:48px auto 0;
+      background:var(--panel);
+      border:1px solid var(--panel-line);
+      border-radius:14px;
+      overflow:hidden;
+      text-align:left;
+      box-shadow:0 30px 80px -20px rgba(0,0,0,.6);
+    }
+    .terminal-bar{
+      display:flex; align-items:center; gap:8px;
+      padding:12px 16px;
+      background:#0c1130;
+      border-bottom:1px solid var(--panel-line);
+    }
+    .terminal-bar span{ width:11px; height:11px; border-radius:50%; }
+    .terminal-bar span:nth-child(1){ background:#ff5f57; }
+    .terminal-bar span:nth-child(2){ background:#febc2e; }
+    .terminal-bar span:nth-child(3){ background:#28c840; }
+    .terminal-body{
+      padding:24px 22px;
+      font-family:'JetBrains Mono', monospace;
+      font-size:15px;
+      min-height:72px;
+    }
+    .terminal-body .prompt{ color:var(--green); }
+    .terminal-body .cmd{ color:var(--text); }
+    .cursor{
+      display:inline-block; width:8px; height:16px;
+      background:var(--blue); margin-left:2px;
+      animation: blink 1s step-end infinite;
+      vertical-align:-3px;
+    }
+    @keyframes blink{ 50%{ opacity:0; } }
+
+    /* ---------- GRID ---------- */
+    .section-label{
+      text-align:center;
+      font-family:'JetBrains Mono', monospace;
+      font-size:12.5px; letter-spacing:3px; text-transform:uppercase;
+      color:var(--text-dim);
+      margin: 90px 0 8px;
+    }
+    .section-title{
+      text-align:center; font-size:clamp(26px,3.5vw,34px); font-weight:700; margin-bottom:50px;
+      padding: 0 20px;
+    }
+
+    .container{
+      width:1240px; max-width:92%; margin:0 auto 40px;
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+      gap:26px;
+    }
+
+    .card{
+      position:relative;
+      background:var(--panel);
+      border:1px solid var(--panel-line);
+      border-radius:20px;
+      padding:32px;
+      overflow:hidden;
+      transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+    }
+    .card::before{
+      content:"";
+      position:absolute; inset:0;
+      background: radial-gradient(420px 160px at 20% -10%, var(--accent, var(--purple)) , transparent 60%);
+      opacity:.14;
+      pointer-events:none;
+    }
+    .card:hover{
+      transform:translateY(-6px);
+      border-color: color-mix(in srgb, var(--accent, var(--purple)) 45%, var(--panel-line));
+      box-shadow: 0 24px 60px -24px color-mix(in srgb, var(--accent, var(--purple)) 55%, transparent);
+    }
+
+    .icon{
+      width:52px; height:52px; border-radius:14px;
+      display:flex; align-items:center; justify-content:center;
+      background: linear-gradient(140deg, color-mix(in srgb, var(--accent) 30%, transparent), transparent);
+      border:1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+      margin-bottom:22px;
+    }
+    .icon svg{ width:26px; height:26px; stroke:var(--accent); }
+
+    .card h2{ font-size:20px; font-weight:700; margin-bottom:4px; }
+    .card .tag{
+      display:inline-block; font-family:'JetBrains Mono', monospace;
+      font-size:11px; letter-spacing:1px; text-transform:uppercase;
+      color:var(--accent); margin-bottom:14px; opacity:.9;
+    }
+    .card .desc{ color:var(--text-dim); font-size:14.5px; line-height:1.65; margin-bottom:24px; min-height:66px; }
+
+    .code-row{
+      background:#050712;
+      border:1px solid var(--panel-line);
+      padding:13px 16px;
+      border-radius:11px;
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+      font-family:'JetBrains Mono', monospace; font-size:13.5px;
+      overflow:auto;
+    }
+    
+    .code-row span{
+      color:#d7ddff;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      min-width:0;
+      flex:1;
+    }
+
+    .copy-btn{
+      background:none; border:1px solid var(--panel-line);
+      color:var(--text-dim);
+      padding:7px 13px; border-radius:8px;
+      font-size:12.5px; font-weight:600;
+      cursor:pointer; flex-shrink:0;
+      transition:.2s;
+    }
+    .copy-btn:hover{ border-color:var(--accent); color:var(--accent); }
+
+    /* ---------- GBIT SHELL CARD ---------- */
+    .shell-links{
+      display:flex;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .shell-link{
+      flex:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:40px;
+      padding:9px 12px;
+      border-radius:10px;
+      border:1px solid var(--panel-line);
+      font-size:12px;
+      font-weight:600;
+      transition:.2s ease;
+      text-align:center;
+    }
+
+    .shell-link-primary{
+      background:rgba(139,108,255,.14);
+      border-color:rgba(139,108,255,.35);
+      color:#c9bfff;
+    }
+
+    .shell-link-primary:hover{
+      background:rgba(139,108,255,.24);
+      border-color:rgba(139,108,255,.65);
+      color:#fff;
+    }
+
+    .shell-link-secondary{
+      background:#0b0f24;
+      color:var(--text-dim);
+    }
+
+    .shell-link-secondary:hover{
+      border-color:var(--purple);
+      color:var(--text);
+    }
+
+
+    .card.soon{ display:flex; flex-direction:column; justify-content:center; align-items:flex-start; }
+    .card.soon .desc{ min-height:auto; }
+
+    /* ---------- COMMAND STRIP ---------- */
+    .strip-wrap{ text-align:center; margin: 30px 0 90px; padding:0 20px; }
+    .strip-tag{ font-family:'JetBrains Mono', monospace; font-size:13px; color:var(--text-dim); letter-spacing:1px; margin-bottom:18px; }
+    .strip{
+      display:inline-flex; flex-wrap:wrap; justify-content:center; gap:10px;
+      background:var(--panel); border:1px solid var(--panel-line);
+      padding:18px 24px; border-radius:14px;
+      font-family:'JetBrains Mono', monospace; font-size:13.5px;
+      max-width: 1000px;
+    }
+    .strip span{
+      padding:6px 12px; border-radius:8px; background:#0b0f24;
+      border:1px solid var(--panel-line);
+    }
+
+    /* ---------- FOOTER ---------- */
+    footer{
+      border-top:1px solid var(--panel-line);
+      padding:40px 20px;
+      text-align:center;
+      color:var(--text-dim);
+      font-size:13.5px;
+      line-height: 2;
+    }
+    footer a{ color:var(--text-dim); text-decoration:none; margin:0 10px; }
+    footer a:hover{ color:var(--text); }
+
+    .toast{
+      position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px);
+      background:#0e1330; border:1px solid var(--panel-line);
+      padding:12px 20px; border-radius:10px;
+      font-size:13.5px; font-family:'JetBrains Mono', monospace;
+      color:var(--green);
+      opacity:0; pointer-events:none;
+      transition:.25s;
+      z-index: 100;
+    }
+    .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+    @media (prefers-reduced-motion: reduce){
+      *{ animation:none !important; transition:none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <div class="nav-brand">
+       <span style="color: var(--purple)">GBIT</span> Ecossistema
+    </div>
+    <div class="links">
+      <a href="#tools">Tools</a>
+      <a href="#install">Install</a>
+      <a href="https://github.com/Gislaine-programadora" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </nav>
+
+  <!-- HERO HEADER -->
+  <header>
+    <!-- Logo principal ampliada no banner -->
+    <img src="./assets/gbit-ecossistema.png" alt="GBIT CLI Ecosystem" class="logo-mark">
+
+    <div class="eyebrow"><span class="dot"></span> 13 CLIs · npm registry</div>
+
+    <h1>GBIT Ecosystem</h1>
+    <p class="tagline">CLI tools that accelerate your Web3, Database, Containers and Frontend development</p>
+
+    <p class="sub">
+      Scaffold apps, manage containers, orchestrate databases, generate docs, and interact with Web3 —
+      <b>your ultimate developer toolbox.</b>
+    </p>
+
+    <!-- TERMINAL ANIMATION -->
+    <div class="terminal">
+      <div class="terminal-bar"><span></span><span></span><span></span></div>
+      <div class="terminal-body">
+        <span class="prompt">$</span> <span class="cmd" id="typed"></span><span class="cursor"></span>
+      </div>
+    </div>
+  </header>
+
+  <div class="section-label">The toolkit</div>
+  <div class="section-title">Thirteen tools. One unified ecosystem.</div>
+
+  <!-- MAIN TOOLS CONTAINER -->
+  <div class="container" id="tools">
+
+    <!-- gbit-container -->
+    <div class="card" style="--accent:var(--blue)">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+      </div>
+      <div class="tag">Orchestration · DevOps</div>
+      <h2>gbit-container</h2>
+      <p class="desc">Native process manager and light orchestrator. Run Python, Node, AI and Go stacks without Docker dependencies.</p>
+      <div class="code-row"><span>npx gbit-container</span><button class="copy-btn" onclick="copyCmd(this,'npx gbit-container')">Copy</button></div>
+    </div>
+    <!-- gbit-shell -->
+    <div class="card" style="--accent:var(--purple)">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="4 17 10 11 4 5"/>
+          <line x1="12" y1="19" x2="20" y2="19"/>
+        </svg>
+      </div>
+      <div class="tag">Terminal · Developer CLI</div>
+      <h2>gbit-shell</h2>
+      <p class="desc">
+        Terminal poderoso e limpo para desenvolvedores, com integração GitHub,
+        gerenciamento de projetos, jobs e perfil para VS Code.
+      </p>
+      <div class="code-row">
+        <span>gbit</span>
+        <button class="copy-btn" onclick="copyCmd(this,'gbit')">Copy</button>
+      </div>
+      <div class="shell-links">
+        <a href="https://gislaine-programadora.github.io/gbit-shell/" target="_blank"
+           rel="noopener noreferrer" class="shell-link shell-link-primary">
+          Ver Landing Page
+        </a>
+        <a href="https://github.com/Gislaine-programadora/gbit-shell" target="_blank"
+           rel="noopener noreferrer" class="shell-link shell-link-secondary">
+          GitHub
+        </a>
+      </div>
+    </div>
+
+
+    <!-- gbit-next -->
+    <div class="card" style="--accent:var(--orange)">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+      </div>
+      <div class="tag">Next.js Framework</div>
+      <h2>gbit-next</h2>
+      <p class="desc">Scaffolds Next.js + TypeScript + Tailwind apps with pre-built templates for SaaS, Dashboards, Ecommerce and CRMs.</p>
+      <div class="code-row"><span>npx gbit-next</span><button class="copy-btn" onclick="copyCmd(this,'npx gbit-next')">Copy</button></div>
+    </div>
+
+    <!-- gbit-react -->
+    <div class="card" style="--accent:var(--cyan)">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/><path d="m4.93 4.93 1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </div>
+      <div class="tag">Frontend React</div>
+      <h2>gbit-react</h2>
+      <p class="desc">Fast Vite + React + TypeScript setup with Tailwind CSS, state management, and modern component architecture ready to run.</p>
+      <div class="code-row"><span>npx gbit-react</span><button class="copy-btn" onclick="copyCmd(this,'npx gbit-react')">Copy</button></div>
+    </div>
+
+    <!-- gbit-db-dados -->
+    <div class="card" style="--accent:var(--pink)">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5c0 1.66 4 3 9 3s9-1.34 9-3"/><path d="M21 5v14c0 1.66-4 3-9 3s-9-1.34-9-3V5"/></svg>
+      </div>
+      <div class="tag">Mock Data · Testing</div>
+      <h2>gbit-db-dados</h2>
+      <p class="desc">Generates realistic mock datasets, JSON seeders, and fake databases for rapid UI testing and API prototyping.</p>
+      <div class="code-row"><span>npx gbit-db-dados</span><button class="copy-btn" onclick="copyCmd(this,'npx gbit-db-dados')">Copy</button></div>
+    </div>
+
+    <!-- gbit-db -->
+    <div class="card" style="--accent:var(--green)">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+      </div>
+      <div class="tag">Database CLI</div>
+      <h2>gbit-db</h2>
+      <p class="desc">Manage SQL, PostgreSQL, and SQLite databases directly from your terminal with auto-migrations and instant schema inspection.</p>
+      <div class="code-row"><span>npx gbit-db</span><button class="copy-btn" onclick="copyCmd(this,'npx gbit-db')">Copy</button></div>
+    </div>
+
+    <!-- gbit-build -->
+    <div class="card" style="--accent:var(--red)">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+      </div>
+      <div class="tag">Build Tool · Bundler</div>
+      <h2>gbit-build</h2>
+      <p class="desc">Blazing fast bundler and optimizer CLI for fullstack apps. Compiles, tree-shakes, and produces clean production builds.</p>
+      <div class="code-row"><span>npx gbit-build</span><button class="copy-btn" onclick="copyCmd(this,'npx gbit-build')">Copy</button></div>
+    </div>
+
+    <!-- gbit-stakin -->
+    <div class="card" style="--accent:var(--purple)">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M8 10h8"/></svg>
+      </div>
+      <div class="tag">Web3 · DeFi</div>
+      <h2>gbit-stakin</h2>
+      <p class="desc">CLI for Web3 staking smart-contract simulation, yield farming calculations, and token lockup testing locally.</p>
+      <div class="code-row"><span>npx gbit-stakin</span><button class="copy-btn" onclick="copyCmd(this,'npx gbit-stakin')">Copy</button></div>
+    </div>
+
+    <!-- gbit-address -->
+    <div class="card" style="--accent:var(--violet)">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="12" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14.5" r="1.2"/></svg>
+      </div>
+      <div class="tag">Web3 · Testing</div>
+      <h2>gbit-address</h2>
+      <p class="desc">Generate Ethereum test wallets — address, private key and mock balance — instantly, for Hardhat, Ganache or Foundry.</p>
+      <div class="code-row"><span>npx gbit-address</span><button class="copy-btn" onclick="copyCmd(this,'npx gbit-address')">Copy</button></div>
+    </div>
+
+    <!-- gbit-readme -->
+    <div class="card" style="--accent:var(--blue)">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg>
+      </div>
+      <div class="tag">Documentation</div>
+      <h2>gbit-readme</h2>
+      <p class="desc">Scans your package.json and folder structure, then writes a complete, professional README.md — badges included.</p>
+      <div class="code-row"><span>npx gbit-readme</span><button class="copy-btn" onclick="copyCmd(this,'npx gbit-readme')">Copy</button></div>
+    </div>
+    
+
+     <!-- gbit-fix -->
+   <div class="card" style="--accent:var(--green)">
+   <div class="icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+  </div>
+   <div class="tag">Auto Repair · CLI</div>
+   <h2>gbit-fix</h2>
+   <p class="desc">Auto-repair de node_modules corrompidos, resolução de conflitos de dependências e start inteligente em um comando.</p>
+   <div class="code-row"><span>npx gbit-fix</span><button class="copy-btn" onclick="copyCmd(this,'npx gbit-fix')">Copy</button></div>
+  </div>
+
+
+    <!-- gbit-start -->
+    <div class="card" style="--accent:var(--green)">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l6-9 6 9-6 9z"/><path d="M11 3v18"/></svg>
+      </div>
+      <div class="tag">Any repository</div>
+      <h2>gbit-start</h2>
+      <p class="desc">Clone a repo, install dependencies (resolving version conflicts automatically), and get a running local URL.</p>
+      <div class="code-row"><span>npx gbit-start &lt;repo-url&gt;</span><button class="copy-btn" onclick="copyCmd(this,'npx gbit-start <repo-url>')">Copy</button></div>
+    </div>
+
+    <!-- create-gbit-app -->
+    <div class="card" style="--accent:var(--purple)">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      </div>
+      <div class="tag">Full stack</div>
+      <h2>create-gbit-app</h2>
+      <p class="desc">Spins up a complete project — backend, frontend (Vite + TypeScript) and smart contracts — in one command.</p>
+      <div class="code-row"><span>npx create-gbit-app my-app</span><button class="copy-btn" onclick="copyCmd(this,'npx create-gbit-app my-app')">Copy</button></div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM STRIP -->
+  <div class="strip-wrap" id="install">
+    <div class="strip-tag">13 CLIS. INFINITE POSSIBILITIES.</div>
+    <div class="strip">
+      <span>npx gbit-shell</span>
+      <span>npx gbit-container</span>
+      <span>npx gbit-next</span>
+      <span>npx gbit-react</span>
+      <span>npx gbit-db-dados</span>
+      <span>npx gbit-db</span>
+      <span>npx gbit-build</span>
+      <span>npx gbit-stakin</span>
+      <span>npx gbit-address</span>
+      <span>npx gbit-readme</span>
+      <span>npx gbit-fix</span>
+      <span>npx gbit-start</span>
+      <span>npx create-gbit-app</span>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    GBIT CLI Ecosystem © 2026 — built one command at a time.
+    <br>
+    <a href="https://github.com/Gislaine-programadora" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://www.npmjs.com/~gislaine-programadora" target="_blank" rel="noopener">npm</a>
+  </footer>
+
+  <!-- NOTIFICATION TOAST -->
+  <div class="toast" id="toast">Copied to clipboard</div>
+
+  <!-- SCRIPTS -->
+  <script>
+    function copyCmd(btn, text){
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        const original = btn.textContent;
+        btn.textContent = 'Copied';
+        setTimeout(() => {
+          toast.classList.remove('show');
+          btn.textContent = original;
+        }, 1400);
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+    }
+
+    const commands = [
+      'gbit-shell',
+      'gbit-container',
+      'gbit-next',
+      'gbit-react',
+      'gbit-db-dados',
+      'gbit-db',
+      'gbit-build',
+      'gbit-stakin',
+      'gbit-address',
+      'gbit-readme',
+      'gbit-fix',
+      'gbit-start <repo-url>',
+      'create-gbit-app my-app'
+    ];
+
+    const typedEl = document.getElementById('typed');
+    let ci = 0, pos = 0, deleting = false;
+
+    function type(){
+      const full = 'npx ' + commands[ci];
+      if(!deleting){
+        pos++;
+        if(pos > full.length){ deleting = true; setTimeout(type, 1400); return; }
+      } else {
+        pos--;
+        if(pos < 0){ deleting = false; ci = (ci+1) % commands.length; pos = 0; }
+      }
+      typedEl.textContent = full.slice(0, pos);
+      setTimeout(type, deleting ? 28 : 55);
+    }
+    
+    if(typedEl) type();
+  </script>
+</body>
+</html>
