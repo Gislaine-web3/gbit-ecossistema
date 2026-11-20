@@ -15,7 +15,7 @@ Build • Clone • Generate • Document • Develop
 
 ### 🌐 Live Demo
 
-https://gislaine-programadora.github.io/gbit-ecossitema/
+https://gislaine-web3.github.io/gbit-ecossitema/
 
 </div>
 
@@ -156,7 +156,7 @@ Visit the live landing page:
 
 ## 🌐
 
-https://gislaine-programadora.github.io/gbit-ecossitema/
+https://gislaine-web3.github.io/gbit-ecossitema/
 
 ---
 
@@ -168,11 +168,11 @@ Software Engineer • Full Stack Developer • Web3 Developer
 
 GitHub
 
-https://github.com/Gislaine-programadora
+https://github.com/Gislaine-web3
 
 LinkedIn
 
-https://www.linkedin.com/in/gislaine-programadora
+https://www.linkedin.com/in/gislaine-web3
 
 ---
 
