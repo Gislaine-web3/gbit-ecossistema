@@ -200,7 +200,7 @@ Professional Open Source Developer Tools
 
 Made with ❤️ by **Gislaine Cristina**
 
-. gislainelophes@gmail.com
+
 
 </div>
 
